@@ -1,0 +1,11 @@
+target("test_set")
+    set_kind("binary")
+    add_files("test_set.c")
+    add_deps("avl")
+target_end()
+
+target("test_map")
+    set_kind("binary")
+    add_files("test_map.c")
+    add_deps("avl")
+target_end()

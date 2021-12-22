@@ -1,2 +1,2 @@
 # avl
-An C implementation of AVL based set/map
+A C implementation of AVL based set/map
