@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         assert(0 == avl_map_search(&_rslt, s, (const void*)((uintptr_t)i)));
         const char *_str = (const char *)_rslt;
         assert(0 == strcmp(_str, _names[i]));
-        printf("we got [%ju] %s\n", i,_str);
+        printf("we got [%zu] %s\n", i,_str);
     }
 
     int ret = 0;
@@ -43,15 +43,15 @@ int main(int argc, char **argv)
 
     for (size_t i = 0; i < 5; i++)
     {
-        printf("attempt to find %ju ", i);
+        printf("attempt to find %zu ", i);
         void *_rslt = NULL;
         int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
         if (0 == ret) {
             const char *_str = (const char *)_rslt;
-            printf("==> found [%ju] %s!\n", i, _str);
+            printf("==> found [%zu] %s!\n", i, _str);
         }
         else {
-            printf("==> not found [%ju]!\n", i);
+            printf("==> not found [%zu]!\n", i);
         }
     }
 
@@ -61,15 +61,15 @@ int main(int argc, char **argv)
 
     for (size_t i = 0; i < 5; i++)
     {
-        printf("attempt to find %ju ", i);
+        printf("attempt to find %zu ", i);
         void *_rslt = NULL;
         int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
         if (0 == ret) {
             const char *_str = (const char *)_rslt;
-            printf("==> found [%ju] %s!\n", i, _str);
+            printf("==> found [%zu] %s!\n", i, _str);
         }
         else {
-            printf("==> not found [%ju]!\n", i);
+            printf("==> not found [%zu]!\n", i);
         }
     }
 
@@ -78,15 +78,15 @@ int main(int argc, char **argv)
 
     for (size_t i = 0; i < 5; i++)
     {
-        printf("attempt to find %ju ", i);
+        printf("attempt to find %zu ", i);
         void *_rslt = NULL;
         int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
         if (0 == ret) {
             const char *_str = (const char *)_rslt;
-            printf("==> found [%ju] %s!\n", i, _str);
+            printf("==> found [%zu] %s!\n", i, _str);
         }
         else {
-            printf("==> not found [%ju]!\n", i);
+            printf("==> not found [%zu]!\n", i);
         }
     }
 
