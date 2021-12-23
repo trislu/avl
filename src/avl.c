@@ -252,11 +252,21 @@ static void __avl_set_reserve_one(struct avl_set *s)
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
     avl_stack *nslots = (avl_stack*)(s->_config._malloc(_slot_size));
     memset(nslots, 0, _slot_size);
-
-    /*! manually reallocate : copy from old slots */
-    size_t _old_slot_size = __avl_stack_bytesize(s->_slots);
-    memcpy(nslots, s->_slots, _old_slot_size);
+    /*! set new slots size*/
     nslots->size = new_rsv_size;
+
+    /*! manually reallocate : copy available old slots*/
+    size_t _old_slot_size = __avl_stack_bytesize(s->_slots);
+    for (size_t i = 0; i < s->_slots->tail; i ++)
+    {
+        __avl_stack_push(nslots, s->_slots->array[i]);
+    }
+    /*! newly allocated slots are also available */
+    for (size_t j = s->_slots->size; j < new_rsv_size; j ++)
+    {
+        /*! @note this loop may take quite a while */
+        __avl_stack_push(nslots, s->_slots->array[j]);
+    }
 
     /*! clean up old slots*/
     memset(s->_slots, 0, _old_slot_size);
@@ -777,11 +787,21 @@ static void __avl_map_reserve_one(struct avl_map *m)
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
     avl_stack *nslots = (avl_stack*)(m->_config._malloc(_slot_size));
     memset(nslots, 0, _slot_size);
-
-    /*! manually reallocate : copy from old slots */
-    size_t _old_slot_size = __avl_stack_bytesize(m->_slots);
-    memcpy(nslots, m->_slots, _old_slot_size);
+    /*! set new slots size*/
     nslots->size = new_rsv_size;
+
+    /*! manually reallocate : copy available old slots*/
+    size_t _old_slot_size = __avl_stack_bytesize(m->_slots);
+    for (size_t i = 0; i < m->_slots->tail; i ++)
+    {
+        __avl_stack_push(nslots, m->_slots->array[i]);
+    }
+    /*! newly allocated slots are also available */
+    for (size_t j = m->_slots->size; j < new_rsv_size; j ++)
+    {
+        /*! @note this loop may take quite a while */
+        __avl_stack_push(nslots, m->_slots->array[j]);
+    }
 
     /*! clean up old slots*/
     memset(m->_slots, 0, _old_slot_size);
