@@ -362,8 +362,12 @@ static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, 
     if (NULL == e)
     {
         /*! @note on edge */
-        size_t empty_slot;
-        assert(0 == __avl_stack_pop(&empty_slot, s->_slots));
+        size_t empty_slot = 0;
+        if (0 == __avl_stack_pop(&empty_slot, s->_slots))
+        {
+            assert(0);
+            return NULL;
+        }
         avl_set_element *ret = &(s->_tree[empty_slot]);
         ret->node.left = (uintptr_t)NULL;
         ret->node.right = (uintptr_t)NULL;
@@ -901,8 +905,12 @@ static avl_map_element *__avl_map_insert(struct avl_map *s, avl_map_element *e, 
     if (NULL == e)
     {
         /*! @note on edge */
-        size_t empty_slot;
-        assert(0 == __avl_stack_pop(&empty_slot, s->_slots));
+        size_t empty_slot = 0;
+        if (0 == __avl_stack_pop(&empty_slot, s->_slots))
+        {
+            assert(0);
+            return NULL;
+        }
         avl_map_element *ret = &(s->_tree[empty_slot]);
         ret->node.left = (uintptr_t)NULL;
         ret->node.right = (uintptr_t)NULL;

@@ -20,9 +20,13 @@
 */
 
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "avl.h"
+
+#define ASSERT_AND_ABORT(stmt) \
+    do { if (!(stmt)) {abort();} } while(0)
 
 int integer_compare(const void *lhs, const void* rhs)
 {
@@ -45,23 +49,21 @@ int main(int argc, char **argv)
     size_t i = 0;
     for (i = 0; i < 5; i++)
     {
-        assert(0 == avl_map_insert(s, (const void*)((uintptr_t)i), (_names[i])));
+        ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void*)((uintptr_t)i), (_names[i])));
         printf("inserting %s\n", _names[i]);
     }
 
     for (i = 0; i < 5; i++)
     {
         void *_rslt = NULL;
-        assert(0 == avl_map_search(&_rslt, s, (const void*)((uintptr_t)i)));
+        ASSERT_AND_ABORT(0 == avl_map_search(&_rslt, s, (const void*)((uintptr_t)i)));
         const char *_str = (const char *)_rslt;
-        assert(0 == strcmp(_str, _names[i]));
+        ASSERT_AND_ABORT(0 == strcmp(_str, _names[i]));
         printf("we got [%zu] %s\n", i,_str);
     }
-
-    int ret = 0;
+    
     printf("------------\n deleting 3\n-----------\n");
-    ret = avl_map_delete(s, (const void*)((uintptr_t)3));
-    assert(0 == ret);
+    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void*)((uintptr_t)3)));
 
     for (i = 0; i < 5; i++)
     {
@@ -78,8 +80,7 @@ int main(int argc, char **argv)
     }
 
     printf("------------\n deleting 2\n-----------\n");
-    ret = avl_map_delete(s, (const void*)((uintptr_t)2));
-    assert(0 == ret);
+    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void*)((uintptr_t)2)));
 
     for (i = 0; i < 5; i++)
     {
@@ -96,7 +97,7 @@ int main(int argc, char **argv)
     }
 
     printf("------------\n adding [2]carl back \n-----------\n");
-    assert(0 == avl_map_insert(s, (const void*)((uintptr_t)2), "carl"));
+    ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void*)((uintptr_t)2), "carl"));
 
     for (i = 0; i < 5; i++)
     {

@@ -20,9 +20,13 @@
 */
 
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "avl.h"
+
+#define ASSERT_AND_ABORT(stmt) \
+    do { if (!(stmt)) {abort();} } while(0)
 
 int string_compare(const void *lhs, const void *rhs)
 {
@@ -45,23 +49,21 @@ int main(int argc, char **argv)
     size_t i = 0;
     for (i = 0; i < 5; i++)
     {
-        assert(0 == avl_set_insert(s, (_names[i])));
+        ASSERT_AND_ABORT(0 == avl_set_insert(s, (_names[i])));
         printf("inserting %s\n", _names[i]);
     }
 
     for (i = 0; i < 5; i++)
     {
         void *_rslt = NULL;
-        assert(0 == avl_set_search(&_rslt, s, _names[i]));
+        ASSERT_AND_ABORT(0 == avl_set_search(&_rslt, s, _names[i]));
         const char *_str = (const char *)_rslt;
-        assert(0 == strcmp(_str, _names[i]));
+        ASSERT_AND_ABORT(0 == strcmp(_str, _names[i]));
         printf("we got %s\n", _str);
     }
 
-    int ret = 0;
     printf("------------\n deleting carl\n-----------\n");
-    ret = avl_set_delete(s, "carl");
-    assert(0 == ret);
+    ASSERT_AND_ABORT(0 == avl_set_delete(s, "carl"));
 
     for (i = 0; i < 5; i++)
     {
@@ -78,8 +80,7 @@ int main(int argc, char **argv)
     }
 
     printf("------------\n deleting alice\n-----------\n");
-    ret = avl_set_delete(s, "alice");
-    assert(0 == ret);
+    ASSERT_AND_ABORT(0 == avl_set_delete(s, "alice"));
 
     for (i = 0; i < 5; i++)
     {
@@ -96,7 +97,7 @@ int main(int argc, char **argv)
     }
 
     printf("------------\n adding carl back \n-----------\n");
-    assert(0 == avl_set_insert(s, "carl"));
+    ASSERT_AND_ABORT(0 == avl_set_insert(s, "carl"));
 
     for (i = 0; i < 5; i++)
     {
