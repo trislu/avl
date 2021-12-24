@@ -6,9 +6,8 @@ add_rules("mode.debug", "mode.release")
 
 set_warnings("all", "error")
 
--- set language: c99
-stdc = "ansi"
-set_languages(stdc)
+-- set language: ANSI
+set_languages("ansi")
 
 target("avl")
     set_kind("static")

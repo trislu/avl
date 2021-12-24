@@ -186,7 +186,9 @@ struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const avl_co
     avl_stack* _stack = (avl_stack*)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
-    for (size_t i = _config._reserve; i != 0; i --)
+
+    size_t i;
+    for (i = _config._reserve; i != 0; i --)
     {
         __avl_stack_push(_stack, i-1);
     }
@@ -204,7 +206,8 @@ void avl_set_clear(struct avl_set *s)
     if (s)
     {
         avl_destruct _d = s->_key_destruct;
-        for (size_t i = 0; i < s->_size; i++)
+        size_t i;
+        for (i = 0; i < s->_size; i++)
         {
             void *_key = (void *)(s->_tree[i].key);
             if (_d)
@@ -278,12 +281,14 @@ static void __avl_set_reserve_one(struct avl_set *s)
 
     /*! manually reallocate : copy available old slots*/
     size_t _old_slot_size = __avl_stack_bytesize(s->_slots);
-    for (size_t i = 0; i < s->_slots->tail; i ++)
+    size_t i;
+    for (i = 0; i < s->_slots->tail; i ++)
     {
         __avl_stack_push(nslots, s->_slots->array[i]);
     }
     /*! newly allocated slots are also available */
-    for (size_t j = s->_slots->size; j < new_rsv_size; j ++)
+    size_t j;
+    for (j = s->_slots->size; j < new_rsv_size; j ++)
     {
         /*! @note this loop may take quite a while */
         __avl_stack_push(nslots, s->_slots->array[j]);
@@ -717,7 +722,8 @@ struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct
     avl_stack* _stack = (avl_stack*)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
-    for (size_t i = _config._reserve; i != 0; i --)
+    size_t i;
+    for (i = _config._reserve; i != 0; i --)
     {
         __avl_stack_push(_stack, i-1);
     }
@@ -736,7 +742,8 @@ void avl_map_clear(struct avl_map *m)
     {
         avl_destruct _kd = m->_key_destruct;
         avl_destruct _vd = m->_val_destruct;
-        for (size_t i = 0; i < m->_size; i++)
+        size_t i;
+        for (i = 0; i < m->_size; i++)
         {
             void *_key = (void *)(m->_tree[i].key);
             if (_kd)
@@ -813,12 +820,14 @@ static void __avl_map_reserve_one(struct avl_map *m)
 
     /*! manually reallocate : copy available old slots*/
     size_t _old_slot_size = __avl_stack_bytesize(m->_slots);
-    for (size_t i = 0; i < m->_slots->tail; i ++)
+    size_t i;
+    for (i = 0; i < m->_slots->tail; i ++)
     {
         __avl_stack_push(nslots, m->_slots->array[i]);
     }
     /*! newly allocated slots are also available */
-    for (size_t j = m->_slots->size; j < new_rsv_size; j ++)
+    size_t j;
+    for (j = m->_slots->size; j < new_rsv_size; j ++)
     {
         /*! @note this loop may take quite a while */
         __avl_stack_push(nslots, m->_slots->array[j]);

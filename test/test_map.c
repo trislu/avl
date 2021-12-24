@@ -42,13 +42,14 @@ int main(int argc, char **argv)
         "david",
         "eve"};
 
-    for (size_t i = 0; i < 5; i++)
+    size_t i = 0;
+    for (i = 0; i < 5; i++)
     {
         assert(0 == avl_map_insert(s, (const void*)((uintptr_t)i), (_names[i])));
         printf("inserting %s\n", _names[i]);
     }
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         void *_rslt = NULL;
         assert(0 == avl_map_search(&_rslt, s, (const void*)((uintptr_t)i)));
@@ -62,7 +63,7 @@ int main(int argc, char **argv)
     ret = avl_map_delete(s, (const void*)((uintptr_t)3));
     assert(0 == ret);
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
     ret = avl_map_delete(s, (const void*)((uintptr_t)2));
     assert(0 == ret);
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
     printf("------------\n adding [2]carl back \n-----------\n");
     assert(0 == avl_map_insert(s, (const void*)((uintptr_t)2), "carl"));
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;

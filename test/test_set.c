@@ -42,13 +42,14 @@ int main(int argc, char **argv)
         "david",
         "eve"};
 
-    for (size_t i = 0; i < 5; i++)
+    size_t i = 0;
+    for (i = 0; i < 5; i++)
     {
         assert(0 == avl_set_insert(s, (_names[i])));
         printf("inserting %s\n", _names[i]);
     }
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         void *_rslt = NULL;
         assert(0 == avl_set_search(&_rslt, s, _names[i]));
@@ -62,7 +63,7 @@ int main(int argc, char **argv)
     ret = avl_set_delete(s, "carl");
     assert(0 == ret);
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
     ret = avl_set_delete(s, "alice");
     assert(0 == ret);
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
     printf("------------\n adding carl back \n-----------\n");
     assert(0 == avl_set_insert(s, "carl"));
 
-    for (size_t i = 0; i < 5; i++)
+    for (i = 0; i < 5; i++)
     {
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
