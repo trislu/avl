@@ -27,6 +27,8 @@
 #define _AVL_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define _AVL_MEM_THRESHOLD (1024 * 1024)
 
+typedef void (*avl_deallocate)(void *);
+
 /*! @struct avl_node */
 typedef struct _avl_node
 {
@@ -131,31 +133,31 @@ struct avl_set
     /* data */
     avl_compare _compare;
     avl_destruct _key_destruct;
-    avl_config _config;
+    struct avl_config _config;
     size_t _size;
     size_t _rindex;
     avl_stack *_slots;
     avl_set_element *_tree;
 };
 
-struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const avl_config *cfg)
+struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const struct avl_config *cfg)
 {
     if (NULL == cmp)
     {
         return NULL;
     }
 
-    avl_config _config = {
-        ._malloc = malloc,
-        ._free = free,
+    struct avl_config _config = {
+        ._alloc = malloc,
+        ._dealloc = free,
         ._reserve = 8};
 
     if (cfg)
     {
-        if (cfg->_malloc && cfg->_free)
+        if (cfg->_alloc && cfg->_dealloc)
         {
-            _config._malloc = cfg->_malloc;
-            _config._free = cfg->_free;
+            _config._alloc = cfg->_alloc;
+            _config._dealloc = cfg->_dealloc;
         }
         if (cfg->_reserve > 0)
         {
@@ -163,7 +165,7 @@ struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const avl_co
         }
     }
 
-    struct avl_set *_s = (struct avl_set *)(_config._malloc(sizeof(struct avl_set)));
+    struct avl_set *_s = (struct avl_set *)(_config._alloc(sizeof(struct avl_set)));
     if (NULL == _s)
     {
         /*! @note panic */
@@ -179,11 +181,11 @@ struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const avl_co
     _s->_size = 0;
 
     size_t _bytes = sizeof(avl_set_element) * _config._reserve;
-    _s->_tree = (avl_set_element *)(_config._malloc(_bytes));
+    _s->_tree = (avl_set_element *)(_config._alloc(_bytes));
     memset(_s->_tree, 0, _bytes);
 
     /*! @note create a stack to record available slots */
-    avl_stack *_stack = (avl_stack *)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
+    avl_stack *_stack = (avl_stack *)(_config._alloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
 
@@ -228,7 +230,7 @@ void avl_set_destroy(struct avl_set *s)
     if (s)
     {
         /*! free tree array */
-        avl_free _f = s->_config._free;
+        avl_deallocate _f = s->_config._dealloc;
         _f(s->_tree);
         s->_tree = NULL;
         /*! free available slots */
@@ -260,7 +262,7 @@ static void __avl_set_reserve_one(struct avl_set *s)
 
     /*! manually reallocate : allocate new tree */
     size_t _new_bytes = sizeof(avl_set_element) * new_rsv_size;
-    avl_set_element *ntree = (avl_set_element *)(s->_config._malloc(_new_bytes));
+    avl_set_element *ntree = (avl_set_element *)(s->_config._alloc(_new_bytes));
 
     /*! manually reallocate : copy from old tree */
     size_t _old_bytes = sizeof(avl_set_element) * s->_config._reserve;
@@ -270,11 +272,11 @@ static void __avl_set_reserve_one(struct avl_set *s)
 
     /*! clean up old tree*/
     memset(s->_tree, 0, _old_bytes);
-    s->_config._free(s->_tree);
+    s->_config._dealloc(s->_tree);
 
     /*! manually reallocate : allocate new slots */
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
-    avl_stack *nslots = (avl_stack *)(s->_config._malloc(_slot_size));
+    avl_stack *nslots = (avl_stack *)(s->_config._alloc(_slot_size));
     memset(nslots, 0, _slot_size);
     /*! set new slots size*/
     nslots->size = new_rsv_size;
@@ -296,7 +298,7 @@ static void __avl_set_reserve_one(struct avl_set *s)
 
     /*! clean up old slots*/
     memset(s->_slots, 0, _old_slot_size);
-    s->_config._free(s->_slots);
+    s->_config._dealloc(s->_slots);
 
     /*! the new setup */
     s->_tree = ntree;
@@ -335,29 +337,25 @@ static avl_set_element *__avl_set_search(struct avl_set *s, avl_set_element *e, 
     return NULL;
 }
 
-int avl_set_search(void **rslt, struct avl_set *s, const void *k)
+void *avl_set_search(struct avl_set *s, const void *k)
 {
     assert(s);
     if (0 == s->_size)
     {
         /*! @brief empty set */
-        return -1;
+        return NULL;
     }
     avl_set_element *root = &(s->_tree[s->_rindex]);
     avl_set_element *ret = __avl_set_search(s, root, k);
     if (NULL == ret)
     {
         /*! @brief not found */
-        return -1;
+        return NULL;
     }
-    if (rslt)
-    {
-        *rslt = (void *)(ret->key);
-    }
-    return 0;
+    return (void *)(ret->key);
 }
 
-static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, const void *k)
+static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, void *k)
 {
     if (NULL == e)
     {
@@ -379,7 +377,12 @@ static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, 
     int cmpret = s->_compare(k, (const void *)(e->key));
     if (0 == cmpret)
     {
-        /*! @note duplication insert, do nothing */
+        /*! @note key duplicated, destroy the previous element*/
+        if (s->_key_destruct)
+        {
+            s->_key_destruct((void *)(e->key));
+        }
+        e->key = (uintptr_t)k;
         return e;
     }
     else if (0 > cmpret)
@@ -457,7 +460,7 @@ static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, 
     return e;
 }
 
-int avl_set_insert(struct avl_set *s, const void *k)
+int avl_set_insert(struct avl_set *s, void *k)
 {
     assert(s);
     /*! empty set */
@@ -477,8 +480,8 @@ int avl_set_insert(struct avl_set *s, const void *k)
     avl_set_element *nroot = __avl_set_insert(s, relem, k);
     /*! update root index */
     s->_rindex = (uint32_t)(nroot - s->_tree);
-    /*! success on size increasing, no change means failure*/
-    return s->_size > cur_size ? 0 : -1;
+    /*! success on size increasing, no change means duplicated*/
+    return s->_size > cur_size ? 0 : 1;
 }
 
 static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, const void *k, int replace)
@@ -670,31 +673,31 @@ struct avl_map
     avl_compare _compare;
     avl_destruct _key_destruct;
     avl_destruct _val_destruct;
-    avl_config _config;
+    struct avl_config _config;
     size_t _size;
     size_t _rindex;
     avl_stack *_slots;
     avl_map_element *_tree;
 };
 
-struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct vdtor, const avl_config *cfg)
+struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct vdtor, const struct avl_config *cfg)
 {
     if (NULL == cmp)
     {
         return NULL;
     }
 
-    avl_config _config = {
-        ._malloc = malloc,
-        ._free = free,
+    struct avl_config _config = {
+        ._alloc = malloc,
+        ._dealloc = free,
         ._reserve = 8};
 
     if (cfg)
     {
-        if (cfg->_malloc && cfg->_free)
+        if (cfg->_alloc && cfg->_dealloc)
         {
-            _config._malloc = cfg->_malloc;
-            _config._free = cfg->_free;
+            _config._alloc = cfg->_alloc;
+            _config._dealloc = cfg->_dealloc;
         }
         if (cfg->_reserve > 0)
         {
@@ -702,7 +705,7 @@ struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct
         }
     }
 
-    struct avl_map *_m = (struct avl_map *)(_config._malloc(sizeof(struct avl_map)));
+    struct avl_map *_m = (struct avl_map *)(_config._alloc(sizeof(struct avl_map)));
     if (NULL == _m)
     {
         /*! @note panic */
@@ -719,11 +722,11 @@ struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct
     _m->_size = 0;
 
     size_t _bytes = sizeof(avl_map_element) * _config._reserve;
-    _m->_tree = (avl_map_element *)(_config._malloc(_bytes));
+    _m->_tree = (avl_map_element *)(_config._alloc(_bytes));
     memset(_m->_tree, 0, _bytes);
 
     /*! @note create a stack to record available slots */
-    avl_stack *_stack = (avl_stack *)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
+    avl_stack *_stack = (avl_stack *)(_config._alloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
     size_t i;
@@ -771,7 +774,7 @@ void avl_map_destroy(struct avl_map *m)
     if (m)
     {
         /*! free tree array */
-        avl_free _f = m->_config._free;
+        avl_deallocate _f = m->_config._dealloc;
         _f(m->_tree);
         m->_tree = NULL;
         /*! free available slots */
@@ -803,7 +806,7 @@ static void __avl_map_reserve_one(struct avl_map *m)
 
     /*! manually reallocate : allocate new tree */
     size_t _new_bytes = sizeof(avl_map_element) * new_rsv_size;
-    avl_map_element *ntree = (avl_map_element *)(m->_config._malloc(_new_bytes));
+    avl_map_element *ntree = (avl_map_element *)(m->_config._alloc(_new_bytes));
 
     /*! manually reallocate : copy from old tree */
     size_t _old_bytes = sizeof(avl_map_element) * m->_config._reserve;
@@ -813,11 +816,11 @@ static void __avl_map_reserve_one(struct avl_map *m)
 
     /*! clean up old tree*/
     memset(m->_tree, 0, _old_bytes);
-    m->_config._free(m->_tree);
+    m->_config._dealloc(m->_tree);
 
     /*! manually reallocate : allocate new slots */
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
-    avl_stack *nslots = (avl_stack *)(m->_config._malloc(_slot_size));
+    avl_stack *nslots = (avl_stack *)(m->_config._alloc(_slot_size));
     memset(nslots, 0, _slot_size);
     /*! set new slots size*/
     nslots->size = new_rsv_size;
@@ -839,7 +842,7 @@ static void __avl_map_reserve_one(struct avl_map *m)
 
     /*! clean up old slots*/
     memset(m->_slots, 0, _old_slot_size);
-    m->_config._free(m->_slots);
+    m->_config._dealloc(m->_slots);
 
     /*! the new setup */
     m->_tree = ntree;

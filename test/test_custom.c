@@ -41,9 +41,27 @@ int string_compare(const void *lhs, const void *rhs)
     return strcmp(l, r);
 }
 
+void *custom_alloc(size_t s)
+{
+    void *p = malloc(s);
+    printf("custom_alloc (%zu) %p\n", s, p);
+    return p;
+}
+
+void custom_dealloc(void *p)
+{
+    printf("custom_dealloc %p\n", p);
+    free(p);
+}
+
 int main(int argc, char **argv)
 {
-    struct avl_set *s = avl_set_create(string_compare, NULL, NULL);
+    struct avl_config _config = {
+        ._alloc = custom_alloc,
+        ._dealloc = custom_dealloc,
+        ._reserve = 5};
+
+    struct avl_set *s = avl_set_create(string_compare, NULL, &_config);
 
     const char *_names[5] = {
         "alice",
