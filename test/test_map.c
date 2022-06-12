@@ -9,7 +9,7 @@
 
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,16 +23,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "avl.h"
+#include "c-avl.h"
 
 #define ASSERT_AND_ABORT(stmt) \
-    do { if (!(stmt)) {abort();} } while(0)
+    do                         \
+    {                          \
+        if (!(stmt))           \
+        {                      \
+            abort();           \
+        }                      \
+    } while (0)
 
-int integer_compare(const void *lhs, const void* rhs)
+int integer_compare(const void *lhs, const void *rhs)
 {
     uintptr_t l = (uintptr_t)lhs;
     uintptr_t r = (uintptr_t)rhs;
-    return l < r ? -1 : ( l > r ? 1 : 0);
+    return l < r ? -1 : (l > r ? 1 : 0);
 }
 
 int main(int argc, char **argv)
@@ -49,66 +55,72 @@ int main(int argc, char **argv)
     size_t i = 0;
     for (i = 0; i < 5; i++)
     {
-        ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void*)((uintptr_t)i), (_names[i])));
+        ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void *)((uintptr_t)i), (_names[i])));
         printf("inserting %s\n", _names[i]);
     }
 
     for (i = 0; i < 5; i++)
     {
         void *_rslt = NULL;
-        ASSERT_AND_ABORT(0 == avl_map_search(&_rslt, s, (const void*)((uintptr_t)i)));
+        ASSERT_AND_ABORT(0 == avl_map_search(&_rslt, s, (const void *)((uintptr_t)i)));
         const char *_str = (const char *)_rslt;
         ASSERT_AND_ABORT(0 == strcmp(_str, _names[i]));
-        printf("we got [%zu] %s\n", i,_str);
+        printf("we got [%zu] %s\n", i, _str);
     }
-    
+
     printf("------------\n deleting 3\n-----------\n");
-    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void*)((uintptr_t)3)));
+    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void *)((uintptr_t)3)));
 
     for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;
-        int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
-        if (0 == ret) {
+        int ret = avl_map_search(&_rslt, s, (const void *)((uintptr_t)i));
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found [%zu] %s!\n", i, _str);
         }
-        else {
+        else
+        {
             printf("==> not found [%zu]!\n", i);
         }
     }
 
     printf("------------\n deleting 2\n-----------\n");
-    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void*)((uintptr_t)2)));
+    ASSERT_AND_ABORT(0 == avl_map_delete(s, (const void *)((uintptr_t)2)));
 
     for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;
-        int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
-        if (0 == ret) {
+        int ret = avl_map_search(&_rslt, s, (const void *)((uintptr_t)i));
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found [%zu] %s!\n", i, _str);
         }
-        else {
+        else
+        {
             printf("==> not found [%zu]!\n", i);
         }
     }
 
     printf("------------\n adding [2]carl back \n-----------\n");
-    ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void*)((uintptr_t)2), "carl"));
+    ASSERT_AND_ABORT(0 == avl_map_insert(s, (const void *)((uintptr_t)2), "carl"));
 
     for (i = 0; i < 5; i++)
     {
         printf("attempt to find %zu ", i);
         void *_rslt = NULL;
-        int ret = avl_map_search(&_rslt, s, (const void*)((uintptr_t)i));
-        if (0 == ret) {
+        int ret = avl_map_search(&_rslt, s, (const void *)((uintptr_t)i));
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found [%zu] %s!\n", i, _str);
         }
-        else {
+        else
+        {
             printf("==> not found [%zu]!\n", i);
         }
     }

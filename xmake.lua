@@ -1,4 +1,4 @@
-set_project("avl")
+set_project("c-avl")
 
 set_version("1.0.0")
 
@@ -9,9 +9,9 @@ set_warnings("all", "error")
 -- set language: ANSI
 set_languages("ansi")
 
-target("avl")
+target("c-avl")
     set_kind("static")
-    add_files("src/avl.c")
+    add_files("src/c-avl.c")
     add_includedirs("export", {public = true})
 target_end()
 

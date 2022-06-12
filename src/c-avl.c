@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "avl.h"
+#include "c-avl.h"
 
 #define _AVL_MAX(a, b) ((a) > (b) ? (a) : (b))
 #define _AVL_MEM_THRESHOLD (1024 * 1024)

@@ -9,7 +9,7 @@
 
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,10 +23,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "avl.h"
+#include "c-avl.h"
 
 #define ASSERT_AND_ABORT(stmt) \
-    do { if (!(stmt)) {abort();} } while(0)
+    do                         \
+    {                          \
+        if (!(stmt))           \
+        {                      \
+            abort();           \
+        }                      \
+    } while (0)
 
 int string_compare(const void *lhs, const void *rhs)
 {
@@ -70,11 +76,13 @@ int main(int argc, char **argv)
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
         int ret = avl_set_search(&_rslt, s, _names[i]);
-        if (0 == ret) {
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found %s!\n", _str);
         }
-        else {
+        else
+        {
             printf("==> not found %d!\n", ret);
         }
     }
@@ -87,11 +95,13 @@ int main(int argc, char **argv)
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
         int ret = avl_set_search(&_rslt, s, _names[i]);
-        if (0 == ret) {
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found %s!\n", _str);
         }
-        else {
+        else
+        {
             printf("==> not found %d!\n", ret);
         }
     }
@@ -104,11 +114,13 @@ int main(int argc, char **argv)
         printf("attempt to find %s ", _names[i]);
         void *_rslt = NULL;
         int ret = avl_set_search(&_rslt, s, _names[i]);
-        if (0 == ret) {
+        if (0 == ret)
+        {
             const char *_str = (const char *)_rslt;
             printf("==> found %s!\n", _str);
         }
-        else {
+        else
+        {
             printf("==> not found %d!\n", ret);
         }
     }
