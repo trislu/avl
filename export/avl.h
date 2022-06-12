@@ -9,7 +9,7 @@
 
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -70,7 +70,6 @@ extern "C"
     int avl_map_insert(struct avl_map *m, const void *k, const void *v);
     int avl_map_search(void **v, struct avl_map *m, const void *k);
     int avl_map_delete(struct avl_map *m, const void *k);
-
 #if defined(__cplusplus)
 }
 #endif

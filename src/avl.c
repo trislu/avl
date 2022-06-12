@@ -9,7 +9,7 @@
 
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -90,7 +90,7 @@ static int __avl_stack_pop(size_t *e, avl_stack *s)
         return -1;
     }
 
-    s->tail --;
+    s->tail--;
     if (e)
     {
         *e = s->array[s->tail];
@@ -102,7 +102,7 @@ static void __avl_stack_push(avl_stack *s, size_t e)
 {
     assert(s);
     s->array[s->tail] = e;
-    s->tail ++;
+    s->tail++;
 }
 
 static void __avl_stack_clear(avl_stack *s)
@@ -179,18 +179,18 @@ struct avl_set *avl_set_create(avl_compare cmp, avl_destruct kdtor, const avl_co
     _s->_size = 0;
 
     size_t _bytes = sizeof(avl_set_element) * _config._reserve;
-    _s->_tree = (avl_set_element*)(_config._malloc(_bytes));
+    _s->_tree = (avl_set_element *)(_config._malloc(_bytes));
     memset(_s->_tree, 0, _bytes);
 
     /*! @note create a stack to record available slots */
-    avl_stack* _stack = (avl_stack*)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
+    avl_stack *_stack = (avl_stack *)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
 
     size_t i;
-    for (i = _config._reserve; i != 0; i --)
+    for (i = _config._reserve; i != 0; i--)
     {
-        __avl_stack_push(_stack, i-1);
+        __avl_stack_push(_stack, i - 1);
     }
     _s->_slots = _stack;
     return _s;
@@ -260,7 +260,7 @@ static void __avl_set_reserve_one(struct avl_set *s)
 
     /*! manually reallocate : allocate new tree */
     size_t _new_bytes = sizeof(avl_set_element) * new_rsv_size;
-    avl_set_element *ntree = (avl_set_element*)(s->_config._malloc(_new_bytes));
+    avl_set_element *ntree = (avl_set_element *)(s->_config._malloc(_new_bytes));
 
     /*! manually reallocate : copy from old tree */
     size_t _old_bytes = sizeof(avl_set_element) * s->_config._reserve;
@@ -271,10 +271,10 @@ static void __avl_set_reserve_one(struct avl_set *s)
     /*! clean up old tree*/
     memset(s->_tree, 0, _old_bytes);
     s->_config._free(s->_tree);
-    
+
     /*! manually reallocate : allocate new slots */
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
-    avl_stack *nslots = (avl_stack*)(s->_config._malloc(_slot_size));
+    avl_stack *nslots = (avl_stack *)(s->_config._malloc(_slot_size));
     memset(nslots, 0, _slot_size);
     /*! set new slots size*/
     nslots->size = new_rsv_size;
@@ -282,13 +282,13 @@ static void __avl_set_reserve_one(struct avl_set *s)
     /*! manually reallocate : copy available old slots*/
     size_t _old_slot_size = __avl_stack_bytesize(s->_slots);
     size_t i;
-    for (i = 0; i < s->_slots->tail; i ++)
+    for (i = 0; i < s->_slots->tail; i++)
     {
         __avl_stack_push(nslots, s->_slots->array[i]);
     }
     /*! newly allocated slots are also available */
     size_t j;
-    for (j = s->_slots->size; j < new_rsv_size; j ++)
+    for (j = s->_slots->size; j < new_rsv_size; j++)
     {
         /*! @note this loop may take quite a while */
         __avl_stack_push(nslots, s->_slots->array[j]);
@@ -307,7 +307,7 @@ static void __avl_set_reserve_one(struct avl_set *s)
 static avl_set_element *__avl_set_search(struct avl_set *s, avl_set_element *e, const void *k)
 {
     assert(e);
-    int cmpret = s->_compare(k, (const void*)(e->key));
+    int cmpret = s->_compare(k, (const void *)(e->key));
     if (0 == cmpret)
     {
         /*! @brief found */
@@ -352,7 +352,7 @@ int avl_set_search(void **rslt, struct avl_set *s, const void *k)
     }
     if (rslt)
     {
-        *rslt = (void*)(ret->key);
+        *rslt = (void *)(ret->key);
     }
     return 0;
 }
@@ -376,7 +376,7 @@ static avl_set_element *__avl_set_insert(struct avl_set *s, avl_set_element *e, 
         s->_size++;
         return ret;
     }
-    int cmpret = s->_compare(k, (const void*)(e->key));
+    int cmpret = s->_compare(k, (const void *)(e->key));
     if (0 == cmpret)
     {
         /*! @note duplication insert, do nothing */
@@ -489,7 +489,7 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
     }
     /*! @brief record on this frame */
     avl_set_element *self = e;
-    int cmpret = s->_compare(k, (const void*)(self->key));
+    int cmpret = s->_compare(k, (const void *)(self->key));
     if (0 > cmpret)
     {
         /*! @note deletion is performed on left-tree, may need a new left child */
@@ -505,7 +505,7 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
             if (rbf < 0)
             {
                 avl_node *_new_root = avl_single_rotate_left(&(self->node));
-                self = (avl_set_element*) _new_root;
+                self = (avl_set_element *)_new_root;
             }
             else if (rbf > 0)
             {
@@ -542,7 +542,8 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
             }
         }
     }
-    else {
+    else
+    {
         /*! @note target found, record it */
         avl_set_element _record = *self;
         /*! check target status */
@@ -558,18 +559,18 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
                 avl_node *_smallest = right;
                 while (1)
                 {
-                    avl_node *_smaller = (avl_node*)(_smallest->left);
+                    avl_node *_smaller = (avl_node *)(_smallest->left);
                     if (NULL == _smaller)
                     {
                         break;
                     }
                     _smallest = _smaller;
                 }
-                avl_set_element *_victim = (avl_set_element*)_smallest;
+                avl_set_element *_victim = (avl_set_element *)_smallest;
                 /*! @note save the key of the victim */
                 self->key = _victim->key;
                 /*! @note perform deletion on right tree */
-                avl_set_element *_new_right = __avl_set_delete(s, (avl_set_element*)right, (const void*)(_victim->key), 1);
+                avl_set_element *_new_right = __avl_set_delete(s, (avl_set_element *)right, (const void *)(_victim->key), 1);
                 /*! @note update new right child */
                 self->node.right = (uintptr_t)(&(_new_right->node));
             }
@@ -579,18 +580,18 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
                 avl_node *_largest = left;
                 while (1)
                 {
-                    avl_node *_larger = (avl_node*)(_largest->right);
+                    avl_node *_larger = (avl_node *)(_largest->right);
                     if (NULL == _larger)
                     {
                         break;
                     }
                     _largest = _larger;
                 }
-                avl_set_element *_victim = (avl_set_element*)_largest;
+                avl_set_element *_victim = (avl_set_element *)_largest;
                 /*! @note save the key of the victim */
                 self->key = _victim->key;
                 /*! @note perform deletion on left tree */
-                avl_set_element *_new_left = __avl_set_delete(s, (avl_set_element*)left, (const void*)(_victim->key), 1);
+                avl_set_element *_new_left = __avl_set_delete(s, (avl_set_element *)left, (const void *)(_victim->key), 1);
                 /*! @note update new left child */
                 self->node.left = (uintptr_t)(&(_new_left->node));
             }
@@ -606,15 +607,15 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
                 /*! @note target is a leaf */
                 self = NULL;
             }
-            else if ( NULL == right )
+            else if (NULL == right)
             {
                 /*! @note target only has left child */
-                self = (avl_set_element*)left;
+                self = (avl_set_element *)left;
             }
-            else if ( NULL == left )
+            else if (NULL == left)
             {
                 /*! @note target only has right child */
-                self = (avl_set_element*)right;
+                self = (avl_set_element *)right;
             }
         }
         /*! finally, cleanup job */
@@ -622,9 +623,9 @@ static avl_set_element *__avl_set_delete(struct avl_set *s, avl_set_element *e, 
         {
             /*! @note target is not replace, destruct key if needed */
             if (s->_key_destruct)
-                s->_key_destruct((void*)(_record.key));
+                s->_key_destruct((void *)(_record.key));
             /*! update size */
-            s->_size --;
+            s->_size--;
         }
     }
     /*! @note update height */
@@ -652,7 +653,6 @@ int avl_set_delete(struct avl_set *s, const void *k)
     s->_rindex = (root - s->_tree);
     return 0;
 }
-
 
 /*! @struct avl_map_element */
 typedef struct _avl_map_element
@@ -719,17 +719,17 @@ struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kdtor, avl_destruct
     _m->_size = 0;
 
     size_t _bytes = sizeof(avl_map_element) * _config._reserve;
-    _m->_tree = (avl_map_element*)(_config._malloc(_bytes));
+    _m->_tree = (avl_map_element *)(_config._malloc(_bytes));
     memset(_m->_tree, 0, _bytes);
 
     /*! @note create a stack to record available slots */
-    avl_stack* _stack = (avl_stack*)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
+    avl_stack *_stack = (avl_stack *)(_config._malloc(sizeof(avl_stack) + sizeof(size_t) * _config._reserve));
     _stack->size = _config._reserve;
     _stack->tail = 0;
     size_t i;
-    for (i = _config._reserve; i != 0; i --)
+    for (i = _config._reserve; i != 0; i--)
     {
-        __avl_stack_push(_stack, i-1);
+        __avl_stack_push(_stack, i - 1);
     }
     _m->_slots = _stack;
     return _m;
@@ -803,7 +803,7 @@ static void __avl_map_reserve_one(struct avl_map *m)
 
     /*! manually reallocate : allocate new tree */
     size_t _new_bytes = sizeof(avl_map_element) * new_rsv_size;
-    avl_map_element *ntree = (avl_map_element*)(m->_config._malloc(_new_bytes));
+    avl_map_element *ntree = (avl_map_element *)(m->_config._malloc(_new_bytes));
 
     /*! manually reallocate : copy from old tree */
     size_t _old_bytes = sizeof(avl_map_element) * m->_config._reserve;
@@ -814,10 +814,10 @@ static void __avl_map_reserve_one(struct avl_map *m)
     /*! clean up old tree*/
     memset(m->_tree, 0, _old_bytes);
     m->_config._free(m->_tree);
-    
+
     /*! manually reallocate : allocate new slots */
     size_t _slot_size = sizeof(avl_stack) + sizeof(size_t) * new_rsv_size;
-    avl_stack *nslots = (avl_stack*)(m->_config._malloc(_slot_size));
+    avl_stack *nslots = (avl_stack *)(m->_config._malloc(_slot_size));
     memset(nslots, 0, _slot_size);
     /*! set new slots size*/
     nslots->size = new_rsv_size;
@@ -825,13 +825,13 @@ static void __avl_map_reserve_one(struct avl_map *m)
     /*! manually reallocate : copy available old slots*/
     size_t _old_slot_size = __avl_stack_bytesize(m->_slots);
     size_t i;
-    for (i = 0; i < m->_slots->tail; i ++)
+    for (i = 0; i < m->_slots->tail; i++)
     {
         __avl_stack_push(nslots, m->_slots->array[i]);
     }
     /*! newly allocated slots are also available */
     size_t j;
-    for (j = m->_slots->size; j < new_rsv_size; j ++)
+    for (j = m->_slots->size; j < new_rsv_size; j++)
     {
         /*! @note this loop may take quite a while */
         __avl_stack_push(nslots, m->_slots->array[j]);
@@ -850,7 +850,7 @@ static void __avl_map_reserve_one(struct avl_map *m)
 static avl_map_element *__avl_map_search(struct avl_map *s, avl_map_element *e, const void *k)
 {
     assert(e);
-    int cmpret = s->_compare(k, (const void*)(e->key));
+    int cmpret = s->_compare(k, (const void *)(e->key));
     if (0 == cmpret)
     {
         /*! @brief found */
@@ -895,7 +895,7 @@ int avl_map_search(void **val, struct avl_map *s, const void *k)
     }
     if (val)
     {
-        *val = (void*)(ret->val);
+        *val = (void *)(ret->val);
     }
     return 0;
 }
@@ -920,7 +920,7 @@ static avl_map_element *__avl_map_insert(struct avl_map *s, avl_map_element *e, 
         s->_size++;
         return ret;
     }
-    int cmpret = s->_compare(k, (const void*)(e->key));
+    int cmpret = s->_compare(k, (const void *)(e->key));
     if (0 == cmpret)
     {
         /*! @note duplication insert, do nothing */
@@ -1033,7 +1033,7 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
     }
     /*! @brief record on this frame */
     avl_map_element *self = e;
-    int cmpret = s->_compare(k, (const void*)(self->key));
+    int cmpret = s->_compare(k, (const void *)(self->key));
     if (0 > cmpret)
     {
         /*! @note deletion is performed on left-tree, may need a new left child */
@@ -1049,7 +1049,7 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
             if (rbf < 0)
             {
                 avl_node *_new_root = avl_single_rotate_left(&(self->node));
-                self = (avl_map_element*) _new_root;
+                self = (avl_map_element *)_new_root;
             }
             else if (rbf > 0)
             {
@@ -1086,7 +1086,8 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
             }
         }
     }
-    else {
+    else
+    {
         /*! @note target found, record it */
         avl_map_element _record = *self;
         /*! check target status */
@@ -1102,19 +1103,19 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
                 avl_node *_smallest = right;
                 while (1)
                 {
-                    avl_node *_smaller = (avl_node*)(_smallest->left);
+                    avl_node *_smaller = (avl_node *)(_smallest->left);
                     if (NULL == _smaller)
                     {
                         break;
                     }
                     _smallest = _smaller;
                 }
-                avl_map_element *_victim = (avl_map_element*)_smallest;
+                avl_map_element *_victim = (avl_map_element *)_smallest;
                 /*! @note switch content with the victim */
                 self->key = _victim->key;
                 self->val = _victim->val;
                 /*! @note perform deletion on right tree */
-                avl_map_element *_new_right = __avl_map_delete(s, (avl_map_element*)right, (const void*)(_victim->key), 1);
+                avl_map_element *_new_right = __avl_map_delete(s, (avl_map_element *)right, (const void *)(_victim->key), 1);
                 /*! @note update new right child */
                 self->node.right = (uintptr_t)(&(_new_right->node));
             }
@@ -1124,19 +1125,19 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
                 avl_node *_largest = left;
                 while (1)
                 {
-                    avl_node *_larger = (avl_node*)(_largest->right);
+                    avl_node *_larger = (avl_node *)(_largest->right);
                     if (NULL == _larger)
                     {
                         break;
                     }
                     _largest = _larger;
                 }
-                avl_map_element *_victim = (avl_map_element*)_largest;
+                avl_map_element *_victim = (avl_map_element *)_largest;
                 /*! @note switch content with the victim */
                 self->key = _victim->key;
                 self->val = _victim->val;
                 /*! @note perform deletion on left tree */
-                avl_map_element *_new_left = __avl_map_delete(s, (avl_map_element*)left, (const void*)(_victim->key), 1);
+                avl_map_element *_new_left = __avl_map_delete(s, (avl_map_element *)left, (const void *)(_victim->key), 1);
                 /*! @note update new left child */
                 self->node.left = (uintptr_t)(&(_new_left->node));
             }
@@ -1152,15 +1153,15 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
                 /*! @note target is a leaf */
                 self = NULL;
             }
-            else if ( NULL == right )
+            else if (NULL == right)
             {
                 /*! @note target only has left child */
-                self = (avl_map_element*)left;
+                self = (avl_map_element *)left;
             }
-            else if ( NULL == left )
+            else if (NULL == left)
             {
                 /*! @note target only has right child */
-                self = (avl_map_element*)right;
+                self = (avl_map_element *)right;
             }
         }
         /*! finally, cleanup job */
@@ -1168,11 +1169,11 @@ static avl_map_element *__avl_map_delete(struct avl_map *s, avl_map_element *e, 
         {
             /*! @note target is not replace, destruct key if needed */
             if (s->_key_destruct)
-                s->_key_destruct((void*)(_record.key));
+                s->_key_destruct((void *)(_record.key));
             if (s->_val_destruct)
-                s->_val_destruct((void*)(_record.val));
+                s->_val_destruct((void *)(_record.val));
             /*! update size */
-            s->_size --;
+            s->_size--;
         }
     }
     /*! @note update height */
