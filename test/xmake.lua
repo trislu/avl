@@ -6,12 +6,6 @@ target("test_set")
     add_deps("c-avl")
 target_end()
 
-target("test_map")
-    set_kind("binary")
-    add_files("test_map.c")
-    add_deps("c-avl")
-target_end()
-
 target("test_custom")
     set_kind("binary")
     add_files("test_custom.c")

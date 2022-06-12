@@ -159,15 +159,6 @@ extern "C"
      */
     int avl_set_delete(struct avl_set *s, const void *k);
 
-    struct avl_map;
-    struct avl_map *avl_map_create(avl_compare cmp, avl_destruct kd, avl_destruct vd, const struct avl_config *cfg);
-    size_t avl_map_size(const struct avl_map *m);
-    void avl_map_clear(struct avl_map *m);
-    void avl_map_destroy(struct avl_map *m);
-    int avl_map_insert(struct avl_map *m, const void *k, const void *v);
-    int avl_map_search(void **v, struct avl_map *m, const void *k);
-    int avl_map_delete(struct avl_map *m, const void *k);
-
 #if defined(__cplusplus)
 }
 #endif
